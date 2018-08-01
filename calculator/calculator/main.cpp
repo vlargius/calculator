@@ -1,6 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
+#ifdef _MBCS
+#include <Windows.h>
+#endif // WIN32
+
 
 struct Error {
 	const char* msg;
@@ -20,6 +24,16 @@ struct BadToken : Error {
 	BadToken() :
 		Error("bad token") {}
 };
+
+
+int factorial(double d) {
+	if (d == 0) {
+		return 1;
+	}
+	else {
+		return d * factorial(d - 1);
+	}
+}
 
 
 
@@ -60,7 +74,8 @@ struct Tokenstream
 
 		switch (ch)
 		{
-		case 'q': case '+': case '-': case '*': case '/': case '%': case ';':
+		case 'x': case '+': case '-': case '*': case '/': case '%': case '=': case '!':
+		case ')': case '(': case '{': case '}': case '<': case '>':
 		{
 			return Token(ch);
 		}
@@ -125,28 +140,64 @@ double primary() {
 		}
 		return v;	
 	}
+	case '{':
+	{
+		double v = expression();
+		t = ts.get();
+		if (t.type != '}') {
+			throw NoCloseBracket();
+		}
+		return v;
+	}
+	case '<':
+	{
+		double v = expression();
+		t = ts.get();
+		if (t.type != '>') {
+			throw NoCloseBracket();
+		}
+		return v;
+	}
 	case '8':
 	{
 		return t.value;
 	}
 	default:
+		ts.put_back(t);
 		break;
 	}
 }
 
+double fact() {
+	double val = primary();
+	Token n = ts.get();
+	switch (n.type)
+	{
+	case '!':
+	{
+		return factorial(val);
+	}
+	default:
+		ts.put_back(n);
+		return val;
+		break;
+	}
+}
+
+
 double term() {
-	double left = primary();
+	double left = fact();
 	Token t = ts.get();
 	while (true) {
-		switch (t.type) {
+		switch (t.type) {		
 		case '*':
 		{
-			left *= primary();
+			left *= fact();
 			break;
 		}
 		case '/':
 		{
-			left /= primary();
+			left /= fact();
 			break;
 		}
 		case '%':
@@ -166,6 +217,11 @@ double term() {
 
 int main() {
 
+
+	std::cout << "Enter expression with floating number" << std::endl
+		<< "You can use: +, -, *, /, % and = for printing value" << std::endl
+		<< "For exit print x" << std::endl
+		<< "---------------------------------------------------" << std::endl;
 	try {
 		double val{ 0 };
 		while (std::cin) {
@@ -173,11 +229,11 @@ int main() {
 			
 			switch (t.type)
 			{
-			case 'q':
+			case 'x':
 			{
 				return 0;
 			}
-			case ';':
+			case '=':
 			{
 				std::cout << "=" << val << std::endl; 
 				break;
@@ -191,16 +247,11 @@ int main() {
 	}
 	catch (Error & e) {
 		std::cout << e.what() << std::endl;
-		int k;
-		std::cin.ignore(10000);
-		std::cin.get();
+		system("pause");
 	}
 	catch (...) {
 		std::cout << "Unexpected exeption" << std::endl;
-		int k;
-		std::cin.clear();
-		std::cin.ignore();
-		std::cin >> k;
+		system("pause");
 	}
 	return 0;
 }
