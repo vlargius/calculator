@@ -164,6 +164,14 @@ double primary() {
 	{
 		return t.value;
 	}
+	case '-':
+	{
+		return -primary();
+	}
+	case '+':
+	{
+		return primary();
+	}
 	default:
 		ts.put_back(t);
 		break;
