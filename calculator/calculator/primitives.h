@@ -1,17 +1,27 @@
 #pragma once
+#include <string>
+#include <stack>
 
 #include "service_char.h"
 #include "math_func.h"
+#include "variable.h"
+
+using std::string;
+using std::cin;
 
 struct Token {
 	double value;
 	char type;
+	string name;
 
-	Token(char c) :
+	explicit Token(char c) :
 		type(c) {}
-	Token(double d) :
+	explicit Token(double d) :
 		type(number),
 		value(d) {}
+	explicit Token(char type, string name) :
+		type(type),
+		name(name) {}
 
 	Token(const Token &) = default;
 };
@@ -19,28 +29,26 @@ struct Token {
 
 struct Tokenstream
 {
-	Token buff;
-	bool is_free; // is buffer free 
+	std::stack<Token> buff;
+	bool is_free() { return buff.size() == 0; } // is buffer free 
 
-	Tokenstream() :
-		is_free(true),
-		buff('0') {
-	}
+	Tokenstream() {}
 
 	Token get() {
-		if (!is_free) {
-			is_free = true;
-			return buff;
+		if (!is_free()) {
+			Token t = buff.top();
+			buff.pop();
+			return t;
 		}
 
 		char ch;
-
-		std::cin >> ch;
+		cin >> ch;
 
 		switch (ch)
 		{
-		case quit_prog:
 		case print:
+		case sep:
+		case '=':
 		case '+':
 		case '-':
 		case '*':
@@ -58,32 +66,50 @@ struct Tokenstream
 		case '3': case '4':	case '5':
 		case '6': case '7':	case '8':
 		case '9': {
-			std::cin.putback(ch); // return back digit of the number
+			cin.putback(ch); // return back digit of the number
 			double val;
-			std::cin >> val;
+			cin >> val;
 			return Token(val);
 		}
 		default:
+			if (isalpha(ch)) {
+				string s;
+				s += ch;
+				//get a full name of the variable
+				while (cin.get(ch) && (isalpha(ch) || isdigit(ch) || ch == '_')) {
+					s += ch;
+				}
+				cin.putback(ch);
+				if (s == exitkey) { return Token(quit_prog); }
+				if (s == declkey) {	return Token(let); }
+				if (s == sqrtkey) { return Token(func_type, s); }
+				if (s == powkey) { return Token(func_type, s); }
+				return Token(variable, s);
+			}
+			if (ch == '#') {
+				string s;
+				s += ch;
+				if (s == declkey) { return Token(let); }
+			}
 			throw BadToken(ch);
 		}
 	}
 
+	//ignoring tokens until c
 	void ignore(char c) {
-		if (!is_free && buff.type != c) {
-			c = buff.type;
-			is_free = true;
+
+		while (!is_free()) {
+			buff.pop();
 		}
 
 		char ch{ 0 };
-		while (std::cin >> ch) {
+		while (cin >> ch) {
 			if (ch == c) { return; }
 		}
 	}
 
 	void put_back(Token t) {
-		if (!is_free) throw Error("Buffer is not free");
-		buff = t;
-		is_free = false;
+		buff.push(t);
 	}
 } ts;
 
@@ -112,6 +138,40 @@ double expression() {
 		t = ts.get();
 	}
 	return left;
+}
+
+double func() {
+	Token t = ts.get();
+	if (t.name == sqrtkey) {
+		string name = t.name;
+		t = ts.get();
+		if (t.type != '(') { throw NoOpenBracket(); }
+		double d = expression();
+		if (d < 0) {
+			throw BadArgument("sqrt argument must be more than zero");
+		}
+		t = ts.get();
+		if (t.type != ')') { throw NoOpenBracket(); }
+		return sqrt(d);
+	}
+
+	if (t.name == powkey) {
+		string name = t.name;
+		t = ts.get();
+		if (t.type != '(') { throw NoOpenBracket(); }
+		double x = expression();
+		t = ts.get();
+		if (t.type != ',') { throw BadArgument("comma missed"); }
+		double i = expression();
+		if (i != int(i)) {
+			throw BadArgument("pow(x, i) - i must be integer");
+		}
+		t = ts.get();
+		if (t.type != ')') { throw NoOpenBracket(); }
+		return power(x, i);
+	}
+	
+	throw MissingFunction(t.name);
 }
 
 double primary() {
@@ -149,6 +209,15 @@ double primary() {
 	{
 		return t.value;
 	}
+	case variable:
+	{
+		return vars::get_value(t.name);
+	}
+	case func_type:
+	{
+		ts.put_back(t);
+		return func();
+	}
 	case '-':
 	{
 		return -primary();
@@ -170,7 +239,10 @@ double post_primary() {
 	{
 	case '!':
 	{
-		return factorial(val);
+		int d = val; 
+		if (d != val)
+			throw BadArgument("factorial argument must be integer");
+		return factorial(d);
 	}
 	default:
 		ts.put_back(n);
@@ -221,4 +293,52 @@ double term() {
 
 void clean_up() {
 	ts.ignore(print);
+}
+
+double declaration() {
+	Token t = ts.get();
+	if (t.type != variable) {
+		throw BadArgument(t.name);
+	}
+	string var_name = t.name;
+	t = ts.get();
+	if (t.type != '=') {
+		throw BadArgument("= sign expecded");
+	}
+
+	double d = expression();
+	vars::define_variable(var_name, d);
+	return d;
+}
+
+double statement() {
+	Token t = ts.get();
+	switch (t.type)
+	{
+	case let:
+	{
+		return declaration();
+		break;
+	}
+	case variable:
+	{
+		if (!vars::is_declared(t.name)) {
+			throw MissingVariable(t.name);
+		}
+		string var_name = t.name;
+		Token m = ts.get();
+		if (m.type != '=') {
+			ts.put_back(m);
+			ts.put_back(t);
+			return expression();
+		}
+		double d = expression();
+		vars::set_value(var_name, d);
+		return d;
+	}
+	default:
+		ts.put_back(t);
+		return expression();
+		break;
+	}
 }

@@ -14,3 +14,10 @@ int factorial(int d) {
 		return d * factorial(d - 1);
 	}
 }
+
+double power(double x, int i) {
+	double k = x;
+	--i;
+	while (i--) { x *= k; }
+	return x;
+}

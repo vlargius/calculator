@@ -30,7 +30,7 @@ void calculate() {
 				return;
 			}
 			ts.put_back(t);
-			cout << result << expression() << endl;
+			cout << result << statement() << endl;
 		} catch (Error & e) {
 			cout << e.what() << endl;
 			clean_up();
@@ -43,10 +43,14 @@ int main() {
 
 	cout << "Enter expression with floating number" << endl
 		<< "Use: [+, -, *, /, %]" << endl
+		<< "pow, sqrt - available" << endl
 		<< "Use = for printing value" << endl
 		<< "For exit print " << quit_prog << endl
 		<< "-------------------------------------------" << endl;
 	try {
+		vars::define_constant("pi", 3.1414);
+		vars::define_constant("e", 2.7182818);
+		vars::define_constant("k", 1000);
 		calculate();
 	}
 	catch (Error & e) {
@@ -54,7 +58,7 @@ int main() {
 		system("pause");
 	}
 	catch (...) {
-		cout << "Unexpected exeption" << endl;
+		cout << "Unexpected exception" << endl;
 		system("pause");
 	}
 	return 0;

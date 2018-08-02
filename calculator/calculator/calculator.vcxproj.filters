@@ -32,5 +32,8 @@
     <ClInclude Include="service_char.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="variable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
