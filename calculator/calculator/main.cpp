@@ -27,6 +27,16 @@ struct BadToken : Error {
 		Error("bad token") {}
 };
 
+struct ZeroDivision : Error {
+	BadToken() :
+		Error("zero division") {}
+};
+
+struct BadArgument : Error {
+	BadToken() :
+		Error("bad argument") {}
+};
+
 
 int factorial(double d) {
 	if (d == 0) {
@@ -211,8 +221,18 @@ double term() {
 			break;
 		}
 		case '%':
-		{
-			left = (int) left % (int) t.value;
+		{			
+			int i1 = int(left);
+			if(i1 != left)
+				throw BadArgument();
+			double d = term();
+			int i2 = int(d);
+			if(i2 != d) 
+				throw BadArgument();
+			if(i2 == 0) 
+				throw ZeroDivision();
+			left = i1 % i2;
+			t = ts.get();
 			break;
 		}
 		default:
