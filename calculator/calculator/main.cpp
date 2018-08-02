@@ -5,6 +5,8 @@
 #include <Windows.h>
 #endif // WIN32
 
+using std::cin;
+using std::cout;
 
 struct Error {
 	const char* msg;
@@ -225,24 +227,14 @@ int main() {
 	try {
 		double val{ 0 };
 		while (std::cin) {
+			cout << "> ";
 			Token t = ts.get();
-			
-			switch (t.type)
-			{
-			case 'x':
-			{
+			while(t.kind == ';') t = ts.get();
+			if(t.kind == 'q') {
 				return 0;
 			}
-			case '=':
-			{
-				std::cout << "=" << val << std::endl; 
-				break;
-			}
-			default:
-				ts.put_back(t);		
-				break;
-			}
-			val = expression();
+			ts.putback(t);
+			cout << "= " << expression() << endl;
 		}
 	}
 	catch (Error & e) {
