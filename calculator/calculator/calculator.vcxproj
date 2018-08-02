@@ -117,6 +117,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="exceptions.h" />
+    <ClInclude Include="math_func.h" />
+    <ClInclude Include="primitives.h" />
+    <ClInclude Include="service_char.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
