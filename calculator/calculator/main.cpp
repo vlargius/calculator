@@ -5,6 +5,14 @@
 #include <Windows.h>
 #endif // WIN32
 
+/*
+todo:
+1) replace all magic constants
+2) add comments
+3) split main function
+4) ignore all chars until printing
+*/
+
 using std::cin;
 using std::cout;
 
