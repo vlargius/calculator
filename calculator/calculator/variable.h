@@ -9,8 +9,7 @@
 using std::string;
 using std::vector;
 
-//this namespace is for variables 
-namespace vars {
+class SymbolTable {
 
 	class Variable {
 	public:
@@ -33,11 +32,22 @@ namespace vars {
 		bool is_constant_;
 	};
 
-//*difficult implementation of variable list
-	vector<Variable> variables;
 
+	vector<Variable> var_table;
+
+	double declare(string name, double value, bool is_constant) {
+		if (!is_declared(name)) {
+			var_table.push_back(Variable(name, value, is_constant));
+		}
+		else {
+			throw VariableError("declared twice: " + name);
+		}
+		return value;
+	}
+
+public:
 	void set_value(string name, double value) {
-		for (Variable& v : variables) {
+		for (Variable& v : var_table) {
 			if (v.get_name() == name) {
 				if (!v.is_constant()) {
 					v.set_value(value);
@@ -52,7 +62,7 @@ namespace vars {
 	}
 
 	double get_value(string name) {
-		for (auto v : variables) {
+		for (auto v : var_table) {
 			if (v.get_name() == name) {
 				return v.get_value();
 			}
@@ -61,7 +71,7 @@ namespace vars {
 	}
 
 	bool is_declared(string name) {
-		for (auto v : variables) {
+		for (auto v : var_table) {
 			if (v.get_name() == name) {
 				return true;
 			}
@@ -69,24 +79,11 @@ namespace vars {
 		return false;
 	}
 
-	double define_variable(string name, double value) {
-		if (!is_declared(name)) {
-			variables.push_back(Variable(name, value, false));
-		}
-		else {
-			throw VariableError("declared twice" + name);
-		}
-		return value;
+	double declare_variable(string name, double value) {		
+		return declare(name, value, false);;
 	}
 
-	double define_constant(string name, double value) {
-		if (!is_declared(name)) {
-			variables.push_back(Variable(name, value, true));
-		}
-		else {
-			throw VariableError("declared twice" + name);
-		}
-		return value;
+	double declare_constant(string name, double value) {
+		return declare(name, value, true);;
 	}
-
-}
+}symb_tbale;

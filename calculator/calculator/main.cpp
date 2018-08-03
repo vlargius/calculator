@@ -17,6 +17,18 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+void help() {
+	cout << "Enter expression with floating number" << endl
+		<< "________________________________________________" << endl
+		<< "use: [+, -, *, /, %] signs" << endl
+		<< "pow, sqrt - available" << endl
+		<< declkey << " [var_name] = (value) - create variable" << endl
+		<< constkey << " [const_name] = (value) - create constant" << endl
+		<< "------------------------------------------------" << endl
+		<< "use " << print << " for printing value, " << "for exit type " << exitkey << endl
+		<< "------------------------------------------------" << endl
+		<< "type h for help" << endl;
+}
 
 void calculate() {
 	double val{ 0 };
@@ -24,10 +36,14 @@ void calculate() {
 		try {
 			cout << prompt;
 			Token t = ts.get();
-			while (t.type == print) t = ts.get();//print canselation
+			while (t.type == print) t = ts.get();//print cancelation
 			if (t.type == quit_prog) { //exit
 				system("pause");
 				return;
+			}
+			if (t.type == helpcall) {
+				help();
+				continue;
 			}
 			ts.put_back(t);
 			cout << result << statement() << endl;
@@ -39,18 +55,13 @@ void calculate() {
 }
 
 int main() {
-
-
-	cout << "Enter expression with floating number" << endl
-		<< "Use: [+, -, *, /, %]" << endl
-		<< "pow, sqrt - available" << endl
-		<< "Use = for printing value" << endl
-		<< "For exit print " << quit_prog << endl
-		<< "-------------------------------------------" << endl;
+	
 	try {
-		vars::define_constant("pi", 3.1414);
-		vars::define_constant("e", 2.7182818);
-		vars::define_constant("k", 1000);
+		symb_tbale.declare_constant("pi", 3.1414);
+		symb_tbale.declare_constant("e", 2.7182818);
+		symb_tbale.declare_constant("k", 1000);
+
+		help();
 		calculate();
 	}
 	catch (Error & e) {

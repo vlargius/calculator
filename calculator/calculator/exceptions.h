@@ -47,7 +47,7 @@ struct VariableError: Error {
 
 struct ConstAssigning : VariableError {
 	ConstAssigning(std::string msg) :
-		VariableError("cant set cosntant " + msg) {}
+		VariableError("cant set cosntant: " + msg) {}
 };
 
 struct MissingVariable : VariableError {
