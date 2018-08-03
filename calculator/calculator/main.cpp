@@ -32,6 +32,7 @@ void help() {
 
 void calculate() {
 	double val{ 0 };
+	Tokenstream ts;
 	while (cin) {
 		try {
 			cout << prompt;
@@ -46,10 +47,10 @@ void calculate() {
 				continue;
 			}
 			ts.put_back(t);
-			cout << result << statement() << endl;
+			cout << result << statement(ts) << endl;
 		} catch (Error & e) {
 			cout << e.what() << endl;
-			clean_up();
+			clean_up(ts);
 		}
 	}
 }

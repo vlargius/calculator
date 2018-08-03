@@ -1,122 +1,31 @@
 #pragma once
 
-#include <string>
 #include <stack>
-
-#include "exceptions.h"
-#include "service_char.h"
-
-using std::string;
-using std::cin;
+#include <string>
 
 struct Token {
 	double value;
 	char type;
-	string name;
-
-	explicit Token(char c) :
-		type(c) {}
-	explicit Token(double d) :
-		type(number),
-		value(d) {}
-	explicit Token(char type, string name) :
-		type(type),
-		name(name) {}
+	std::string name;
 
 	Token(const Token &) = default;
+
+	explicit Token(char c);
+	explicit Token(double d);
+	explicit Token(char type, std::string name);
 };
 
 
-struct Tokenstream
+class Tokenstream
 {
-	std::stack<Token> buff;
+public:
+	Tokenstream() = default;
+	Token get();
+	void put_back(Token t);
+	//ignoring tokens until c
+	void ignore(char c);	
 	bool is_free() { return buff.size() == 0; } // is buffer free 
 
-	Tokenstream() {}
-
-	Token get() {
-		if (!is_free()) {
-			Token t = buff.top();
-			buff.pop();
-			return t;
-		}
-
-		char ch;
-		while(cin.get(ch) && isspace(ch)) {}
-
-		switch (ch)
-		{
-		case next_str:
-		{
-			return Token(print);
-		}
-		case print:
-		case sep:
-		case '=':
-		case '+':
-		case '-':
-		case '*':
-		case '/':
-		case '%':
-		case '!':
-		case '(': case ')':
-		case '{': case '}':
-		case '<': case '>':
-		{
-			return Token(ch);
-		}
-		case '.':
-		case '0': case '1': case '2':
-		case '3': case '4':	case '5':
-		case '6': case '7':	case '8':
-		case '9': {
-			cin.putback(ch); // return back digit of the number
-			double val;
-			cin >> val;
-			return Token(val);
-		}
-		default:
-			if (isalpha(ch)) {
-				string s;
-				s += ch;
-				//get a full name of the variable
-				while (cin.get(ch) && (isalpha(ch) || isdigit(ch) || ch == '_')) {
-					s += ch;
-				}
-				cin.putback(ch);
-				if (s == exitkey) { return Token(quit_prog); }
-				if (s == helpkey) { return Token(helpcall); }
-				if (s == declkey) { return Token(let); }
-				if (s == constkey) { return Token(const_tok); }
-				if (s == sqrtkey) { return Token(func_type, s); }
-				if (s == powkey) { return Token(func_type, s); }
-				if (s == sinkey) { return Token(func_type, s); }
-				return Token(variable, s);
-			}
-			if (ch == '#') {
-				string s;
-				s += ch;
-				if (s == declkey) { return Token(let); }
-			}
-			throw BadToken(ch);
-		}
-	}
-
-	//ignoring tokens until c
-	void ignore(char c) {
-
-		while (!is_free()) {
-			if (buff.top().type == c) { return; }
-			buff.pop();
-		}
-
-		char ch{ 0 };
-		while (cin.get(ch) && ch != next_str) {
-			if (ch == c) { return; }
-		}
-	}
-
-	void put_back(Token t) {
-		buff.push(t);
-	}
-} ts;
+private:
+	std::stack<Token> buff;
+};

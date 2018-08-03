@@ -2,22 +2,6 @@
 
 #include "exceptions.h"
 
-int factorial(int d) {
-	if (d < 0) {
-		throw BadArgument();
-	}
+int factorial(int d);
 
-	if (d == 0) {
-		return 1;
-	}
-	else {
-		return d * factorial(d - 1);
-	}
-}
-
-double power(double x, int i) {
-	double k = x;
-	--i;
-	while (i--) { x *= k; }
-	return x;
-}
+double power(double x, int i);

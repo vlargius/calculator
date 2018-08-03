@@ -9,21 +9,21 @@
 using std::string;
 using std::cin;
 
-double term();
+double term(Tokenstream & ts);
 
-double expression() {
-	double left = term();
+double expression(Tokenstream & ts) {
+	double left = term(ts);
 	Token t = ts.get();
 	while (true) {
 		switch (t.type) {
 		case '+':
 		{
-			left += term();
+			left += term(ts);
 			break;
 		}
 		case '-':
 		{
-			left -= term();
+			left -= term(ts);
 			break;
 		}
 		default:
@@ -35,13 +35,13 @@ double expression() {
 	return left;
 }
 
-double func() {
+double func(Tokenstream & ts) {
 	Token t = ts.get();
 	if (t.name == sqrtkey) {
 		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
-		double d = expression();
+		double d = expression(ts);
 		if (d < 0) {
 			throw BadArgument("sqrt argument must be more than zero");
 		}
@@ -54,10 +54,10 @@ double func() {
 		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
-		double x = expression();
+		double x = expression(ts);
 		t = ts.get();
 		if (t.type != ',') { throw BadArgument("comma missed"); }
-		double i = expression();
+		double i = expression(ts);
 		if (i != int(i)) {
 			throw BadArgument("pow(x, i) - i must be integer");
 		}
@@ -70,7 +70,7 @@ double func() {
 		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
-		double d = expression();
+		double d = expression(ts);
 		t = ts.get();
 		if (t.type != ')') { throw NoOpenBracket(); }
 		return sin(d);
@@ -80,13 +80,13 @@ double func() {
 	throw MissingFunction(t.name);
 }
 
-double primary() {
+double primary(Tokenstream & ts) {
 	Token t = ts.get();
 	switch (t.type)
 	{
 	case '(':
 	{
-		double v = expression();
+		double v = expression(ts);
 		t = ts.get();
 		if (t.type != ')') {
 			throw NoCloseBracket();
@@ -95,7 +95,7 @@ double primary() {
 	}
 	case '{':
 	{
-		double v = expression();
+		double v = expression(ts);
 		t = ts.get();
 		if (t.type != '}') {
 			throw NoCloseBracket();
@@ -104,7 +104,7 @@ double primary() {
 	}
 	case '<':
 	{
-		double v = expression();
+		double v = expression(ts);
 		t = ts.get();
 		if (t.type != '>') {
 			throw NoCloseBracket();
@@ -122,15 +122,15 @@ double primary() {
 	case func_type:
 	{
 		ts.put_back(t);
-		return func();
+		return func(ts);
 	}
 	case '-':
 	{
-		return -primary();
+		return -primary(ts);
 	}
 	case '+':
 	{
-		return primary();
+		return primary(ts);
 	}
 	default:
 		throw PrimaryExpressionExpected();
@@ -138,8 +138,8 @@ double primary() {
 	}
 }
 
-double post_primary() {
-	double val = primary();
+double suffix_primary(Tokenstream & ts) {
+	double val = primary(ts);
 	Token n = ts.get();
 	switch (n.type)
 	{
@@ -158,19 +158,19 @@ double post_primary() {
 }
 
 
-double term() {
-	double left = post_primary();
+double term(Tokenstream & ts) {
+	double left = suffix_primary(ts);
 	Token t = ts.get();
 	while (true) {
 		switch (t.type) {
 		case '*':
 		{
-			left *= post_primary();
+			left *= suffix_primary(ts);
 			break;
 		}
 		case '/':
 		{
-			left /= post_primary();
+			left /= suffix_primary(ts);
 			break;
 		}
 		case '%':
@@ -178,7 +178,7 @@ double term() {
 			int i1 = int(left);
 			if (i1 != left)
 				throw BadArgument("left argument is not integer");
-			double d = term();
+			double d = term(ts);
 			int i2 = int(d);
 			if (i2 != d)
 				throw BadArgument("right argument is not integer");
@@ -197,11 +197,11 @@ double term() {
 	return left;
 }
 
-void clean_up() {
+void clean_up(Tokenstream & ts) {
 	ts.ignore(print);
 }
 
-double declaration(bool is_const) {
+double declaration(Tokenstream & ts, bool is_const) {
 	Token t = ts.get();
 	if (t.type != variable) {
 		throw BadArgument(t.name);
@@ -213,31 +213,31 @@ double declaration(bool is_const) {
 		if (t.type != '=') {
 			throw BadArgument("= sign expecded");
 		}
-		d = expression();
+		d = expression(ts);
 		symb_tbale.declare_constant(var_name, d);
 	}
 	else {
 		t = ts.get();
 		if (t.type == '=') {
-			d = expression();
+			d = expression(ts);
 		}		
 		symb_tbale.declare_constant(var_name, d);
 	}
 	return d;
 }
 
-double statement() {
+double statement(Tokenstream & ts) {
 	Token t = ts.get();
 	switch (t.type)
 	{
 	case let:
 	{
-		return declaration(false);
+		return declaration(ts, false);
 		break;
 	}
 	case const_tok:
 	{
-		return declaration(true);
+		return declaration(ts, true);
 		break;
 	}
 	case variable:
@@ -250,15 +250,15 @@ double statement() {
 		if (m.type != '=') {
 			ts.put_back(m);
 			ts.put_back(t);
-			return expression();
+			return expression(ts);
 		}
-		double d = expression();
+		double d = expression(ts);
 		symb_tbale.set_value(var_name, d);
 		return d;
 	}
 	default:
 		ts.put_back(t);
-		return expression();
+		return expression(ts);
 		break;
 	}
 }
