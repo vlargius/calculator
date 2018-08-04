@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <stack>
 #include <string>
 
@@ -19,7 +20,8 @@ struct Token {
 class Tokenstream
 {
 public:
-	Tokenstream() = default;
+	Tokenstream(std::istream & in);
+
 	Token get();
 	void put_back(Token t);
 	//ignoring tokens until c
@@ -28,4 +30,6 @@ public:
 
 private:
 	std::stack<Token> buff;
+	std::istream & in;
+
 };

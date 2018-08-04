@@ -32,13 +32,17 @@ void help() {
 
 void calculate() {
 	double val{ 0 };
-	Tokenstream ts;
+	Tokenstream ts(cin);
 	while (cin) {
 		try {
 			cout << prompt;
 			Token t = ts.get();
-			while (t.type == print) t = ts.get();//print cancelation
-			if (t.type == quit_prog) { //exit
+
+			//print cancelation
+			while (t.type == print) t = ts.get();
+
+			//exit
+			if (t.type == quit_prog) { 
 				system("pause");
 				return;
 			}
