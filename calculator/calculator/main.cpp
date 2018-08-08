@@ -18,7 +18,7 @@ using std::cout;
 using std::endl;
 
 void help() {
-	cout << "Enter expression with floating number" << endl
+	cout << "Enter expression with roman number [IVXLCDM]" << endl
 		<< "________________________________________________" << endl
 		<< "use: [+, -, *, /, %] signs" << endl
 		<< "pow, sqrt - available" << endl
@@ -65,7 +65,7 @@ int main() {
 		symb_tbale.declare_constant("pi", 3.1414);
 		symb_tbale.declare_constant("e", 2.7182818);
 		symb_tbale.declare_constant("k", 1000);
-
+		
 		help();
 		calculate();
 	}
@@ -77,5 +77,6 @@ int main() {
 		cout << "Unexpected exception" << endl;
 		system("pause");
 	}
+
 	return 0;
 }

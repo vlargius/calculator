@@ -4,15 +4,18 @@
 #include <stack>
 #include <string>
 
+#include "roman_int.h"
+
+
 struct Token {
-	double value;
+	RomanInt value;
 	char type;
 	std::string name;
 
 	Token(const Token &) = default;
 
 	explicit Token(char c);
-	explicit Token(double d);
+	explicit Token(RomanInt d);
 	explicit Token(char type, std::string name);
 };
 

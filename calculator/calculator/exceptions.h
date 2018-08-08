@@ -60,4 +60,8 @@ struct MissingFunction : Error {
 		Error("missing function: " + name) {}
 };
 
+inline void error(const std::string& msg) {
+	throw Error(msg);
+}
+
 

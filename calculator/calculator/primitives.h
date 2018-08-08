@@ -9,10 +9,10 @@
 using std::string;
 using std::cin;
 
-double term(Tokenstream & ts);
+RomanInt term(Tokenstream & ts);
 
-double expression(Tokenstream & ts) {
-	double left = term(ts);
+RomanInt expression(Tokenstream & ts) {
+	RomanInt left = term(ts);
 	Token t = ts.get();
 	while (true) {
 		switch (t.type) {
@@ -35,7 +35,7 @@ double expression(Tokenstream & ts) {
 	return left;
 }
 
-double func(Tokenstream & ts) {
+RomanInt func(Tokenstream & ts) {
 	Token t = ts.get();
 	if (t.name == sqrtkey) {
 		string name = t.name;
@@ -54,7 +54,7 @@ double func(Tokenstream & ts) {
 		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
-		double x = expression(ts);
+		int x =(int) expression(ts);
 		t = ts.get();
 		if (t.type != ',') { throw BadArgument("comma missed"); }
 		double i = expression(ts);
@@ -138,8 +138,8 @@ double primary(Tokenstream & ts) {
 	}
 }
 
-double suffix_primary(Tokenstream & ts) {
-	double val = primary(ts);
+RomanInt suffix_primary(Tokenstream & ts) {
+	RomanInt val = primary(ts);
 	Token n = ts.get();
 	switch (n.type)
 	{
@@ -158,8 +158,8 @@ double suffix_primary(Tokenstream & ts) {
 }
 
 
-double term(Tokenstream & ts) {
-	double left = suffix_primary(ts);
+RomanInt term(Tokenstream & ts) {
+	RomanInt left = suffix_primary(ts);
 	Token t = ts.get();
 	while (true) {
 		switch (t.type) {
@@ -226,7 +226,7 @@ double declaration(Tokenstream & ts, bool is_const) {
 	return d;
 }
 
-double statement(Tokenstream & ts) {
+RomanInt statement(Tokenstream & ts) {
 	Token t = ts.get();
 	switch (t.type)
 	{

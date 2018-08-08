@@ -117,12 +117,14 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_func.cpp" />
+    <ClCompile Include="roman_int.cpp" />
     <ClCompile Include="token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="math_func.h" />
     <ClInclude Include="primitives.h" />
+    <ClInclude Include="roman_int.h" />
     <ClInclude Include="service_char.h" />
     <ClInclude Include="token.h" />
     <ClInclude Include="variable.h" />

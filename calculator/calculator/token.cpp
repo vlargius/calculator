@@ -12,7 +12,7 @@ using std::string;
 
 Token::Token(char c) :
 	type(c) {}
-Token::Token(double d) :
+Token::Token(RomanInt d) :
 	type(number),
 	value(d) {}
 Token::Token(char type, string name) :
@@ -55,13 +55,10 @@ Token Tokenstream::get() {
 	{
 		return Token(ch);
 	}
-	case '.':
-	case '0': case '1': case '2':
-	case '3': case '4':	case '5':
-	case '6': case '7':	case '8':
-	case '9': {
+	case 'I': case 'V': case 'X': 
+	case 'L': case 'C': case 'M': {
 		in.putback(ch); // return back digit of the number
-		double val;
+		RomanInt val;
 		in >> val;
 		return Token(val);
 	}
