@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_func.cpp" />
+    <ClCompile Include="primitives.cpp" />
     <ClCompile Include="token.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +127,9 @@
     <ClInclude Include="service_char.h" />
     <ClInclude Include="token.h" />
     <ClInclude Include="variable.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

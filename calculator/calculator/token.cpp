@@ -19,11 +19,6 @@ Token::Token(char type, string name) :
 	type(type),
 	name(name) {}
 
-
-Tokenstream::Tokenstream(std::istream & in):
-	in(in) {
-}
-
 Token Tokenstream::get() {
 	if (!is_free()) {
 		Token t = buff.top();
@@ -31,8 +26,12 @@ Token Tokenstream::get() {
 		return t;
 	}
 
+	if (in->peek() == EOF) {
+		set_default_stream();
+	}
+
 	char ch;
-	while (in.get(ch) && isspace(ch)) {}
+	while (in->get(ch) && isspace(ch)) {}
 
 	switch (ch)
 	{
@@ -60,9 +59,9 @@ Token Tokenstream::get() {
 	case '3': case '4':	case '5':
 	case '6': case '7':	case '8':
 	case '9': {
-		in.putback(ch); // return back digit of the number
+		in->putback(ch); // return back digit of the number
 		double val;
-		in >> val;
+		*in >> val;
 		return Token(val);
 	}
 	default:
@@ -70,12 +69,15 @@ Token Tokenstream::get() {
 			string s;
 			s += ch;
 			//get a full name of the variable
-			while (in.get(ch) && (isalpha(ch) || isdigit(ch) || ch == '_')) {
+			while (in->get(ch) && (isalpha(ch) || isdigit(ch) || ch == '_')) {
 				s += ch;
 			}
-			in.putback(ch);
+			in->putback(ch);
 			if (s == exitkey) { return Token(quit_prog); }
 			if (s == helpkey) { return Token(helpcall); }
+			if (s == fromkey) { return Token(fromcall); }
+			if (s == tokey) { return Token(tocall); }
+
 			if (s == declkey) { return Token(let); }
 			if (s == constkey) { return Token(const_tok); }
 			if (s == sqrtkey) { return Token(func_type, s); }
@@ -101,7 +103,7 @@ void Tokenstream::ignore(char c) {
 	}
 
 	char ch{ 0 };
-	while (in.get(ch) && ch != next_str) {
+	while (in->get(ch) && ch != next_str) {
 		if (ch == c) { return; }
 	}
 }

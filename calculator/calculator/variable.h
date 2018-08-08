@@ -86,4 +86,4 @@ public:
 	double declare_constant(string name, double value) {
 		return declare(name, value, true);;
 	}
-}symb_tbale;
+};

@@ -3,6 +3,11 @@
 #include <iostream>
 #include <stack>
 #include <string>
+#include <memory>
+
+using std::istream;
+using std::string;
+using std::cin;
 
 struct Token {
 	double value;
@@ -20,7 +25,16 @@ struct Token {
 class Tokenstream
 {
 public:
-	Tokenstream(std::istream & in);
+	Tokenstream(istream & in = cin) :
+		in(&in) {}
+
+	void set_stream(istream* stream) { 
+		in = stream;
+	}
+	void set_default_stream() {
+		in = default_strem;
+	}
+	istream & get_stream() { return *in; }
 
 	Token get();
 	void put_back(Token t);
@@ -30,6 +44,8 @@ public:
 
 private:
 	std::stack<Token> buff;
-	std::istream & in;
+	istream * in;
+
+	istream * const default_strem = &cin;
 
 };

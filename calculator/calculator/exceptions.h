@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+using std::string;
+
 struct Error {
 	std::string msg;
 
@@ -59,5 +61,3 @@ struct MissingFunction : Error {
 	MissingFunction(std::string name) :
 		Error("missing function: " + name) {}
 };
-
-
