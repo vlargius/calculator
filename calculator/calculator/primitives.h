@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #include "service_char.h"
 #include "math_func.h"
@@ -9,6 +10,7 @@
 
 using std::string;
 using std::cin;
+using std::ostream;
 
 class primitives {
 public:
@@ -17,6 +19,8 @@ public:
 	static double term(Tokenstream & ts);
 
 	static double expression(Tokenstream & ts);
+
+	static void proc(ostream & os, Tokenstream & ts);
 
 	static double func(Tokenstream & ts);
 
@@ -28,5 +32,5 @@ public:
 
 	static double declaration(Tokenstream & ts, bool is_const);
 
-	static double statement(Tokenstream & ts);
+	static ostream & statement(ostream & os, Tokenstream & ts);
 };

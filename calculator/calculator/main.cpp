@@ -87,7 +87,8 @@ void calculate() {
 				continue;
 			}
 			ts.put_back(t);
-			*out_s << result << primitives::statement(ts) << endl;
+			*out_s << result;
+			primitives::statement(*out_s, ts) << endl;
 		} catch (Error & e) {
 			*out_s << e.what() << endl;
 			primitives::clean_up(ts);

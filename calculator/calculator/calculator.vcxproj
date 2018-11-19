@@ -121,6 +121,7 @@
     <ClCompile Include="token.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="checker.h" />
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="math_func.h" />
     <ClInclude Include="primitives.h" />

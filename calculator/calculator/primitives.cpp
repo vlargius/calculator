@@ -1,11 +1,19 @@
-#include "primitives.h"
 
+#include <bitset>
+
+#include "primitives.h"
+#include "checker.h"
 
 double primitives::expression(Tokenstream & ts) {
 	double left = term(ts);
 	Token t = ts.get();
 	while (true) {
 		switch (t.type) {
+		case '|':
+		{
+			left = check<int>(left) | check<int>(term(ts));
+			break;
+		}
 		case '+':
 		{
 			left += term(ts);
@@ -25,10 +33,24 @@ double primitives::expression(Tokenstream & ts) {
 	return left;
 }
 
+void primitives::proc(ostream & os, Tokenstream & ts) {
+	Token t = ts.get();
+	if (t.name == bshowkey) {
+		t = ts.get();
+		if (t.type != '(') { throw NoOpenBracket(); }
+		double d = expression(ts);
+		int ival = check<int>(d);
+		os << std::bitset<sizeof(int)*8>(ival);
+		t = ts.get();
+		if (t.type != ')') { throw NoOpenBracket(); }
+		t = ts.get();
+		if (t.type != print) { throw NoOpenBracket(); }
+	}
+}
+
 double primitives::func(Tokenstream & ts) {
 	Token t = ts.get();
 	if (t.name == sqrtkey) {
-		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
 		double d = expression(ts);
@@ -41,7 +63,6 @@ double primitives::func(Tokenstream & ts) {
 	}
 
 	if (t.name == powkey) {
-		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
 		double x = expression(ts);
@@ -55,9 +76,7 @@ double primitives::func(Tokenstream & ts) {
 		if (t.type != ')') { throw NoOpenBracket(); }
 		return power((int)x, (int)i);
 	}
-
 	if (t.name == sinkey) {
-		string name = t.name;
 		t = ts.get();
 		if (t.type != '(') { throw NoOpenBracket(); }
 		double d = expression(ts);
@@ -133,6 +152,13 @@ double primitives::suffix_primary(Tokenstream & ts) {
 	Token n = ts.get();
 	switch (n.type)
 	{
+	case '~':
+	{
+		int d = (int)val;
+		if (d != val)
+			throw BadArgument("bitewize operation argument has to be integer");
+		return ~d;
+	}
 	case '!':
 	{
 		int d = (int)val;
@@ -153,6 +179,16 @@ double primitives::term(Tokenstream & ts) {
 	Token t = ts.get();
 	while (true) {
 		switch (t.type) {
+		case '^':
+		{
+			left = check<int>(left) ^ check<int>(suffix_primary(ts));
+			break;
+		}
+		case '&':
+		{
+			left = check<int>(left) & check<int>(suffix_primary(ts));
+			break;
+		}
 		case '*':
 		{
 			left *= suffix_primary(ts);
@@ -216,18 +252,18 @@ double primitives::declaration(Tokenstream & ts, bool is_const) {
 	return d;
 }
 
-double primitives::statement(Tokenstream & ts) {
+ostream& primitives::statement(ostream & os, Tokenstream & ts) {
 	Token t = ts.get();
 	switch (t.type)
 	{
 	case let:
 	{
-		return declaration(ts, false);
+		os << declaration(ts, false);
 		break;
 	}
 	case const_tok:
 	{
-		return declaration(ts, true);
+		os << declaration(ts, true);
 		break;
 	}
 	case variable:
@@ -240,17 +276,24 @@ double primitives::statement(Tokenstream & ts) {
 		if (m.type != '=') {
 			ts.put_back(m);
 			ts.put_back(t);
-			return expression(ts);
+			os << expression(ts);
 		}
 		double d = expression(ts);
 		symb_tbale.set_value(var_name, d);
-		return d;
+		os << d;
+	}
+	case proc_type:
+	{
+		ts.put_back(t);
+		proc(os, ts);
+		break;
 	}
 	default:
 		ts.put_back(t);
-		return expression(ts);
+		os << expression(ts);
 		break;
 	}
+	return os;
 }
 
 SymbolTable primitives::symb_tbale = SymbolTable();

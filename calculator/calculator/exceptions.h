@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 
+#include "service_char.h"
+
 using std::string;
 
 struct Error {
 	std::string msg;
 
-	Error(std::string msg) :
+	Error(const std::string msg) :
 		msg(msg.c_str()) {}
 
 	virtual std::string what() { return msg; }
@@ -20,6 +22,11 @@ struct NoCloseBracket : Error {
 struct NoOpenBracket : Error {
 	NoOpenBracket() :
 		Error("open bracket expected") {}
+};
+
+struct NoTerminator : Error {
+	NoTerminator() :
+		Error(print + " expected") {}
 };
 
 struct BadToken : Error {
@@ -38,26 +45,26 @@ struct PrimaryExpressionExpected : Error {
 };
 
 struct BadArgument : Error {
-	BadArgument(std::string user_msg = "") :
+	BadArgument(const std::string user_msg = "") :
 		Error("bad argument: " + user_msg) {}
 };
 
 struct VariableError: Error {
-	VariableError(std::string msg) :
+	VariableError(const std::string msg) :
 		Error(msg) {}
 };
 
 struct ConstAssigning : VariableError {
-	ConstAssigning(std::string msg) :
+	ConstAssigning(const std::string msg) :
 		VariableError("cant set cosntant: " + msg) {}
 };
 
 struct MissingVariable : VariableError {
-	MissingVariable(std::string name) :
+	MissingVariable(const std::string name) :
 		VariableError("missing variable: " + name) {}
 };
 
 struct MissingFunction : Error {
-	MissingFunction(std::string name) :
+	MissingFunction(const std::string name) :
 		Error("missing function: " + name) {}
 };

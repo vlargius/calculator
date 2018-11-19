@@ -51,6 +51,8 @@ Token Tokenstream::get() {
 	case '(': case ')':
 	case '{': case '}':
 	case '<': case '>':
+	case '&': case '|':
+	case '^': case '~':
 	{
 		return Token(ch);
 	}
@@ -83,6 +85,8 @@ Token Tokenstream::get() {
 			if (s == sqrtkey) { return Token(func_type, s); }
 			if (s == powkey) { return Token(func_type, s); }
 			if (s == sinkey) { return Token(func_type, s); }
+
+			if (s == bshowkey) { return Token(proc_type, s); }
 			return Token(variable, s);
 		}
 		if (ch == '#') {
