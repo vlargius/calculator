@@ -277,10 +277,12 @@ ostream& primitives::statement(ostream & os, Tokenstream & ts) {
 			ts.put_back(m);
 			ts.put_back(t);
 			os << expression(ts);
+			break;
 		}
 		double d = expression(ts);
 		symb_tbale.set_value(var_name, d);
 		os << d;
+		break;
 	}
 	case proc_type:
 	{
