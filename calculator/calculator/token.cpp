@@ -1,14 +1,12 @@
-#include "token.h"
-
 #include <iostream>
 #include <string>
 
-
+#include "token.h"
 #include "exceptions.h"
 #include "service_char.h"
 
 
-using std::string;
+using namespace std;
 
 Token::Token(char c) :
 	type(c) {}

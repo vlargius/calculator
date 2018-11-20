@@ -6,12 +6,12 @@
 using std::string;
 
 struct Error {
-	std::string msg;
+	string msg;
 
-	Error(const std::string msg) :
+	Error(const string msg) :
 		msg(msg.c_str()) {}
 
-	virtual std::string what() { return msg; }
+	virtual string what() { return msg; }
 };
 
 struct NoCloseBracket : Error {
@@ -31,7 +31,7 @@ struct NoTerminator : Error {
 
 struct BadToken : Error {
 	BadToken(char ch) :
-		Error("bad token: " + std::string(1, ch)) {}
+		Error("bad token: " + string(1, ch)) {}
 };
 
 struct ZeroDivision : Error {
@@ -45,26 +45,26 @@ struct PrimaryExpressionExpected : Error {
 };
 
 struct BadArgument : Error {
-	BadArgument(const std::string user_msg = "") :
+	BadArgument(const string user_msg = "") :
 		Error("bad argument: " + user_msg) {}
 };
 
 struct VariableError: Error {
-	VariableError(const std::string msg) :
+	VariableError(const string msg) :
 		Error(msg) {}
 };
 
 struct ConstAssigning : VariableError {
-	ConstAssigning(const std::string msg) :
+	ConstAssigning(const string msg) :
 		VariableError("cant set cosntant: " + msg) {}
 };
 
 struct MissingVariable : VariableError {
-	MissingVariable(const std::string name) :
+	MissingVariable(const string name) :
 		VariableError("missing variable: " + name) {}
 };
 
 struct MissingFunction : Error {
-	MissingFunction(const std::string name) :
+	MissingFunction(const string name) :
 		Error("missing function: " + name) {}
 };

@@ -7,12 +7,7 @@
 #include "exceptions.h"
 #include "primitives.h"
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::ifstream;
-using std::ofstream;
-using std::ostream;
+using namespace std;
 
 void help() {
 	cout << "Enter expression with floating number" << endl
@@ -35,7 +30,7 @@ void calculate() {
 	ostream & default_out = cout;
 	istream & default_in = cin;
 	double val{ 0 };
-	std::unique_ptr<ifstream> in_s;	
+	unique_ptr<ifstream> in_s;	
 	ostream * out_s = &default_out;
 	Tokenstream ts;	
 
@@ -62,7 +57,7 @@ void calculate() {
 					continue;
 				}
 
-				in_s = std::make_unique<ifstream>(ifstream(t.name.c_str()));
+				in_s = make_unique<ifstream>(ifstream(t.name.c_str()));
 				if (!in_s->is_open()) {
 					throw Error("no such file");
 				}

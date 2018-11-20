@@ -6,8 +6,7 @@
 
 #include "exceptions.h"
 
-using std::string;
-using std::vector;
+using namespace std;
 
 class SymbolTable {
 
@@ -23,8 +22,6 @@ class SymbolTable {
 		bool is_constant() const { return is_constant_; }
 
 		void set_value(double value) { this->value = value; }
-
-
 
 	private:
 		string name;

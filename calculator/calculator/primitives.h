@@ -8,9 +8,7 @@
 #include "token.h"
 #include "variable.h"
 
-using std::string;
-using std::cin;
-using std::ostream;
+using namespace std;
 
 class primitives {
 public:

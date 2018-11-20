@@ -40,7 +40,7 @@ void primitives::proc(ostream & os, Tokenstream & ts) {
 		if (t.type != '(') { throw NoOpenBracket(); }
 		double d = expression(ts);
 		int ival = check<int>(d);
-		os << std::bitset<sizeof(int)*8>(ival);
+		os << bitset<sizeof(int)*8>(ival);
 		t = ts.get();
 		if (t.type != ')') { throw NoOpenBracket(); }
 		t = ts.get();

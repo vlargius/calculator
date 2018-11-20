@@ -5,20 +5,18 @@
 #include <string>
 #include <memory>
 
-using std::istream;
-using std::string;
-using std::cin;
+using namespace std;
 
 struct Token {
 	double value;
 	char type;
-	std::string name;
+	string name;
 
 	Token(const Token &) = default;
 
 	explicit Token(char c);
 	explicit Token(double d);
-	explicit Token(char type, std::string name);
+	explicit Token(char type, string name);
 };
 
 
@@ -43,7 +41,7 @@ public:
 	bool is_free() { return buff.size() == 0; } // is buffer free 
 
 private:
-	std::stack<Token> buff;
+	stack<Token> buff;
 	istream * in;
 
 	istream * const default_strem = &cin;
