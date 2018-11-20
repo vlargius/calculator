@@ -247,7 +247,7 @@ double primitives::declaration(Tokenstream & ts, bool is_const) {
 		if (t.type == '=') {
 			d = expression(ts);
 		}
-		symb_tbale.declare_constant(var_name, d);
+		symb_tbale.declare_variable(var_name, d);
 	}
 	return d;
 }
